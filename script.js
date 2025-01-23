@@ -9,8 +9,8 @@ const Gameboard = (function() {
   }
 
   const printBoard = () => {
-    const board = board.map((row) => row.map((cell) => cell.getValue()))
-    console.log(board);
+    const boardWithValues = board.map((row) => row.map((cell) => cell.getValue()))
+    console.log(boardWithValues);
   };
 
   const getBoard = () => board;
@@ -18,7 +18,7 @@ const Gameboard = (function() {
   const markSpot = function(spot, player) {
     //convert the spot (ex "3,2") into integer row and column values
     let [row, col] = spot.split(",").map(x => parseInt(x, 10));
-    board[row][col].addToken(player);
+    board[row-1][col-1].addToken(player);
   }
 
   return {
@@ -32,11 +32,11 @@ const GameController = (function(playerOneName = "Player One", playerTwoName = "
   const players = [
     {
       name: playerOneName,
-      token: X,
+      token: "X",
     },
     {
       name: playerTwoName,
-      token: O,
+      token: "O",
     }
   ];
   
@@ -60,9 +60,20 @@ const GameController = (function(playerOneName = "Player One", playerTwoName = "
     printNewRound();
   }
 
+  const checkWin  = () => {
+    board = Gameboard.getBoard()
+    for (let i = 0; i < 3; i++) {
+      row = board[i]
+      if(row.every(cell => cell.getValue() === row[0].getValue() && cell.getValue() !== 0)) {
+        console.log("You Win!");
+      }
+    }
+  }
+
   return {
     getActivePlayer,
     playRound,
+    checkWin,
   }
 })();
 
@@ -80,5 +91,7 @@ function Cell() {
     getValue
   };
 }
-
-GameController.playRound();
+for(let i = 0; i < 6; i++) {
+  GameController.playRound();
+  GameController.checkWin();
+}
