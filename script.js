@@ -8,6 +8,24 @@ const Gameboard = (function() {
     }
   }
 
+  const renderBoard = () => {
+    const gameboard = document.querySelector("#gameboard");
+    gameboard.innerHTML = "";
+
+    board.forEach((row, rowIndex) => {
+      row.forEach((cell, colIndex) => {
+        const cellDiv = document.createElement("div");
+        cellDiv.classList.add("cell");
+        cellDiv.dataset.row = rowIndex;
+        cellDiv.dataset.col = colIndex;
+        if (cell.getValue() != 0) {
+          cellDiv.textContent = cell.getValue();
+        }
+        gameboard.appendChild(cellDiv)
+      });
+    });
+  }
+
   const printBoard = () => {
     const boardWithValues = board.map((row) => row.map((cell) => cell.getValue()))
     console.log(boardWithValues);
@@ -19,12 +37,14 @@ const Gameboard = (function() {
     //convert the spot (ex "3,2") into integer row and column values
     let [row, col] = spot.split(",").map(x => parseInt(x, 10));
     board[row-1][col-1].addToken(player);
+    renderBoard();
   }
 
   return {
     printBoard,
     getBoard,
-    markSpot
+    markSpot,
+    renderBoard,
   }
 })();
 
@@ -53,21 +73,56 @@ const GameController = (function(playerOneName = "Player One", playerTwoName = "
     console.log(`${getActivePlayer().name}'s turn.`)
   };
 
+  const checkWin  = () => {
+    board = Gameboard.getBoard()
+    const checkRowWin = () => {
+      for (let i = 0; i < 3; i++) {
+        row = board[i]
+        if(row.every(cell => cell.getValue() === row[0].getValue() && cell.getValue() !== 0)) {
+          return true
+        }
+      }
+    }
+
+    const checkColumnWin = () => {
+      for(let i = 0; i < 3; i++) {
+        if (
+          board[0][i].getValue() !== 0 &&
+          board.every(row => row[i].getValue() === board[0][i].getValue())
+        ) {
+          return true;
+        }
+      }
+    }
+
+    const checkDiagonalWin = () => {
+      if (
+        //left to right
+        (board[0][0].getValue() !== 0 &&
+        board[0][0].getValue() === board[1][1].getValue() &&
+        board[1][1].getValue() === board[2][2].getValue()) ||
+        //right to left
+        (board[0][2].getValue() !== 0 &&
+        board[0][2].getValue() === board[1][1].getValue() &&
+        board[1][1].getValue() === board[2][0].getValue()) 
+      ) {
+        return true;
+      }
+    }
+
+    if (checkRowWin() || checkColumnWin() || checkDiagonalWin()) {
+      console.log(`${getActivePlayer().name} Wins`);
+      return true;
+    }
+
+    return false;
+  }
+
   const playRound = () => {
     const spot = prompt("Enter the spot: ");
     Gameboard.markSpot(spot, getActivePlayer());
     switchTurn();
     printNewRound();
-  }
-
-  const checkWin  = () => {
-    board = Gameboard.getBoard()
-    for (let i = 0; i < 3; i++) {
-      row = board[i]
-      if(row.every(cell => cell.getValue() === row[0].getValue() && cell.getValue() !== 0)) {
-        console.log("You Win!");
-      }
-    }
   }
 
   return {
@@ -91,7 +146,7 @@ function Cell() {
     getValue
   };
 }
-for(let i = 0; i < 6; i++) {
+
+while(!GameController.checkWin()) {
   GameController.playRound();
-  GameController.checkWin();
 }
