@@ -8,8 +8,13 @@ const Gameboard = (function() {
     }
   }
 
+  const gameboard = document.querySelector("#gameboard");
+  gameboard.addEventListener("click", (e) => {
+    if (!e.target.classList.contains("cell")) return;
+    GameController.playRound(e.target.dataset.row, e.target.dataset.col)
+  });
+
   const renderBoard = () => {
-    const gameboard = document.querySelector("#gameboard");
     gameboard.innerHTML = "";
 
     board.forEach((row, rowIndex) => {
@@ -33,11 +38,9 @@ const Gameboard = (function() {
 
   const getBoard = () => board;
 
-  const markSpot = function(spot, player) {
+  const markSpot = function(row, col, player) {
     //convert the spot (ex "3,2") into integer row and column values
-    let [row, col] = spot.split(",").map(x => parseInt(x, 10));
-    board[row-1][col-1].addToken(player);
-    renderBoard();
+    board[row][col].addToken(player);
   }
 
   return {
@@ -118,11 +121,14 @@ const GameController = (function(playerOneName = "Player One", playerTwoName = "
     return false;
   }
 
-  const playRound = () => {
-    const spot = prompt("Enter the spot: ");
-    Gameboard.markSpot(spot, getActivePlayer());
+  const playRound = (row, col) => {
+    Gameboard.markSpot(row, col, getActivePlayer());
+    Gameboard.renderBoard();
+    if(checkWin()) {
+      alert(`${getActivePlayer().name} Wins!`)
+      return
+    }
     switchTurn();
-    printNewRound();
   }
 
   return {
@@ -147,6 +153,5 @@ function Cell() {
   };
 }
 
-while(!GameController.checkWin()) {
-  GameController.playRound();
-}
+Gameboard.renderBoard();
+
