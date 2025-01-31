@@ -10,7 +10,7 @@ const Gameboard = (function() {
 
   const gameboard = document.querySelector("#gameboard");
   gameboard.addEventListener("click", (e) => {
-    if (!e.target.classList.contains("cell")) return;
+    if (!e.target.classList.contains("cell") || GameController.gameOver) return;
     GameController.playRound(e.target.dataset.row, e.target.dataset.col)
   });
 
@@ -30,12 +30,6 @@ const Gameboard = (function() {
       });
     });
   }
-
-  const printBoard = () => {
-    const boardWithValues = board.map((row) => row.map((cell) => cell.getValue()))
-    console.log(boardWithValues);
-  };
-
   const getBoard = () => board;
 
   const markSpot = function(row, col, player) {
@@ -44,7 +38,6 @@ const Gameboard = (function() {
   }
 
   return {
-    printBoard,
     getBoard,
     markSpot,
     renderBoard,
@@ -64,16 +57,12 @@ const GameController = (function(playerOneName = "Player One", playerTwoName = "
   ];
   
   let activePlayer = players[0];
+  let gameOver = false;
 
   const getActivePlayer = () => activePlayer;
 
   const switchTurn = () => {
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
-  };
-
-  const printNewRound = () => {
-    Gameboard.printBoard();
-    console.log(`${getActivePlayer().name}'s turn.`)
   };
 
   const checkWin  = () => {
@@ -114,8 +103,10 @@ const GameController = (function(playerOneName = "Player One", playerTwoName = "
     }
 
     if (checkRowWin() || checkColumnWin() || checkDiagonalWin()) {
-      console.log(`${getActivePlayer().name} Wins`);
-      return true;
+      const winMsg = document.querySelector("#winMsg")
+      winMsg.textContent = `${getActivePlayer().name} Wins!`
+      gameOver = true;
+      return true
     }
 
     return false;
@@ -124,10 +115,7 @@ const GameController = (function(playerOneName = "Player One", playerTwoName = "
   const playRound = (row, col) => {
     Gameboard.markSpot(row, col, getActivePlayer());
     Gameboard.renderBoard();
-    if(checkWin()) {
-      alert(`${getActivePlayer().name} Wins!`)
-      return
-    }
+    if(checkWin()) return
     switchTurn();
   }
 
