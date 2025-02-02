@@ -10,8 +10,8 @@ const Gameboard = (function() {
 
   const gameboard = document.querySelector("#gameboard");
   gameboard.addEventListener("click", (e) => {
-    if (!e.target.classList.contains("cell") || GameController.gameOver) return;
-    GameController.playRound(e.target.dataset.row, e.target.dataset.col)
+    if (!e.target.classList.contains("cell") || GameController.getGameOver()) return;
+    GameController.playRound(e.target.dataset.row, e.target.dataset.col);
   });
 
   const renderBoard = () => {
@@ -59,7 +59,9 @@ const GameController = (function(playerOneName = "Player One", playerTwoName = "
   let activePlayer = players[0];
   let gameOver = false;
 
+
   const getActivePlayer = () => activePlayer;
+  const getGameOver = () => gameOver;
 
   const switchTurn = () => {
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
@@ -123,6 +125,7 @@ const GameController = (function(playerOneName = "Player One", playerTwoName = "
     getActivePlayer,
     playRound,
     checkWin,
+    getGameOver
   }
 })();
 
