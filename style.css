@@ -12,7 +12,15 @@ body, html {
 #title {
   margin-top: 2rem;
   margin-bottom: 15vh;
-  font
+}
+
+#replayButton {
+  padding: 1.5rem 2rem;
+  margin: 2rem;
+  font-size: 1.5rem;
+  border: none;
+  border-radius: 8px;
+  display: none;
 }
 
 #winMsg {

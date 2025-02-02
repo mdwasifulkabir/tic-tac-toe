@@ -30,6 +30,13 @@ const Gameboard = (function() {
       });
     });
   }
+
+  const resetBoard = () => {
+    board.forEach((row) => row.forEach((cell) => {
+      cell.reset(0);
+    }))
+  }
+
   const getBoard = () => board;
 
   const markSpot = function(row, col, player) {
@@ -41,6 +48,7 @@ const Gameboard = (function() {
     getBoard,
     markSpot,
     renderBoard,
+    resetBoard
   }
 })();
 
@@ -105,9 +113,10 @@ const GameController = (function(playerOneName = "Player One", playerTwoName = "
     }
 
     if (checkRowWin() || checkColumnWin() || checkDiagonalWin()) {
-      const winMsg = document.querySelector("#winMsg")
-      winMsg.textContent = `${getActivePlayer().name} Wins!`
+      const winMsg = document.querySelector("#winMsg");
+      winMsg.textContent = `${getActivePlayer().name} Wins!`;
       gameOver = true;
+      showReplayButton();
       return true
     }
 
@@ -121,11 +130,21 @@ const GameController = (function(playerOneName = "Player One", playerTwoName = "
     switchTurn();
   }
 
+  const resetGame = () => {
+    const winMsg = document.querySelector("#winMsg");
+    winMsg.textContent = "";
+    gameOver = false;
+    Gameboard.resetBoard();
+    Gameboard.renderBoard()
+    hideReplayButton();
+  }
+
   return {
     getActivePlayer,
     playRound,
     checkWin,
-    getGameOver
+    getGameOver,
+    resetGame
   }
 })();
 
@@ -136,13 +155,32 @@ function Cell() {
     value = player.token
   }
 
+  const reset = () => {
+    value = 0;
+  }
+
   const getValue = () => value;
 
   return {
     addToken,
-    getValue
+    getValue,
+    reset
   };
 }
+
+const replayButton = document.querySelector("#replayButton");
+
+function showReplayButton() {
+  replayButton.style.display = "block";
+}
+
+function hideReplayButton() {
+  replayButton.style.display = "none";
+}
+
+replayButton.addEventListener("click", () => {
+  GameController.resetGame();
+})
 
 Gameboard.renderBoard();
 
