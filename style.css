@@ -11,20 +11,24 @@ body, html {
 
 #title {
   margin-top: 2rem;
-  margin-bottom: 15vh;
+  margin-bottom: 5rem;
 }
 
 #replayButton {
   padding: 1.5rem 2rem;
-  margin: 2rem;
+  margin-top: 4rem;
   font-size: 1.5rem;
   border: none;
   border-radius: 8px;
   display: none;
+  background-color: #1e90FF;
+  font-weight: bold;
+  color: white;
 }
 
+
 #winMsg {
-  margin-top: 5rem;
+  margin-top: 4rem;
   font-size: 2rem;
 }
 
